@@ -1,0 +1,19 @@
+[debug] Packaging C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\flight_prediction_2.12-0.1.jar ...
+[debug] Input file mappings:
+[debug] 	
+[debug] 	  C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\classes
+[debug] 	es
+[debug] 	  C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\classes\es
+[debug] 	es\upm
+[debug] 	  C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\classes\es\upm
+[debug] 	es\upm\dit
+[debug] 	  C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\classes\es\upm\dit
+[debug] 	es\upm\dit\ging
+[debug] 	  C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\classes\es\upm\dit\ging
+[debug] 	es\upm\dit\ging\predictor
+[debug] 	  C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\classes\es\upm\dit\ging\predictor
+[debug] 	es\upm\dit\ging\predictor\MakePrediction$.class
+[debug] 	  C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\classes\es\upm\dit\ging\predictor\MakePrediction$.class
+[debug] 	es\upm\dit\ging\predictor\MakePrediction.class
+[debug] 	  C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\classes\es\upm\dit\ging\predictor\MakePrediction.class
+[debug] Done packaging.

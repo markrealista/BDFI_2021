@@ -1,83 +1,80 @@
-# BDFI_2021
-
-Práctica de la asignatura Big Data Fundamentos y Arquitectura del Máster Universitario de Ingeniría de Telecomunicación (MUIT) de la UPM. Práctica basada en en el siguiente repositorio: https://github.com/ging/practica_big_data_2019
+# Prediccion de Vuelos - BDFI 2021
+Práctica de predicción de vuelos de la asignatura Big Data Fundamentos y Arquitectura del Máster Universitario de Ingeniría de Telecomunicación de la UPM para el curso 
+2021/2022. El guión y el código de la práctica se pueden encontrar en el siguiente repositorio: https://github.com/ging/practica_big_data_2019.
 
 **AUTORES:**
-
 - Raúl Cabria González
-
 - Mark Realista Quiocho
 
-## PRÁCTICA SIN MODIFICACIONES
+**CONSIDERACIÓN IMPORTANTE:** 
+Para la correcta ejecución de la práctica se recomienda realizarla en un sistema operativo basado en Linux o en Mac OS. 
+En caso de realizarla en Windows, algunas alternativas serían instalar una máquina virtual de Linux, instalar el Subsistema de Windows para Linux disponible en Windows 10 o 
+utilizar Git Bash que permite lanzar comandos básicos de Linux.
 
-### Instalación
+**NOTA:** Esta práctica se ha llevado a cabo en Windows 10 mediante la utilización de Git Bash.
 
-En la siguiente lista se muestran las herramientas utilizadas para la realización de la práctica con sus respectivas versiones:
+## PARTE 1 - EJECUCIÓN DE LA PRÁCTICA SIN MODIFICACIONES
 
-- [Intellij](https://www.jetbrains.com/help/idea/installation-guide.html) (jdk_1.8)
+### Instalación de componentes
+A continuación se muestran los componentes que se han utilizado para realizar la práctica:
+
+- [JDK](https://www.oracle.com/es/java/technologies/javase/javase8-archive-downloads.html) (version 1.8)
 - [Pyhton3](https://realpython.com/installing-python/) (Version 3.7) 
 - [PIP](https://pip.pypa.io/en/stable/installing/)
 - [SBT](https://www.scala-sbt.org/release/docs/Setup.html) 
-- [MongoDB](https://docs.mongodb.com/manual/installation/) (version 4.2)
-- [Spark](https://spark.apache.org/docs/latest/) (Mandatory version 3.1.2)
-- [Scala](https://www.scala-lang.org)(version 2.12)
-- [Zookeeper](https://zookeeper.apache.org/releases.html)
-- [Kafka](https://kafka.apache.org/quickstart) (version kafka_2.12-2.8.1)
+- [MongoDB](https://docs.mongodb.com/manual/installation/) (version 4.2.17)
+- [Spark](https://spark.apache.org/docs/latest/) (version 3.1.2)
+- [Scala](https://www.scala-lang.org) (version 2.12)
+- [Kafka y Zookeeper](https://kafka.apache.org/downloads) (version 2.12-2.8.1)
 
-### Descarga de datos e instalación de librerías python
+**NOTA:** La versión que se recomienda utilizar de Kafka es la 2.12-3.0.0, sin embargo, esta versión da ciertos problemas en Windows por lo que decidimos utilizar 
+la versión 2.12-2.8.1.
 
-En primer lugar, clonar el repositorio de la práctica y entramos dentro de la carpeta practica_big_data_2019
+### Descarga de datos de vuelos e instalación de librerías python
+
+En primer lugar, clonamos el repositorio de la práctica:
 ```
 git clone https://github.com/ging/practica_big_data_2019
-cd practica_big_data_2019
 ```
-Descargamos lo datos:
+Ahora, dentro de la carpeta `practica_big_data_2019` descargamos los datos de vuelos:
 ```
 resources/download_data.sh
 ```
-Instalamos la librearía de python necesarias:
+En la misma carpeta, instalamos las librearías de python requeridas:
 ```
 pip install -r requirements.txt
 ```
 
-### Zookeeper y Kafka
-Nos situamos dentro de la carpeta de kafka descargada y ejecutamos los siguientes comandos:
-#### Iniciar Zookeeper
+### Iniciar Zookeeper y Kafka
+Para iniciar Zookeeper, abrimos un terminal y dentro de la carpeta de kafka descargada `kafka_2.12-2.8.1` ejecutamos lo siguiente:
 ```
 bin/zookeeper-server-start.sh config/zookeeper.properties
 ```
-#### Iniciar Kafka
+Para iniciar Kafka, abrimos otro terminal y en la misma carpeta de kafka ejecutamos lo siguiente:
 ```
 bin/kafka-server-start.sh config/server.properties
 ```
-Abrimos otro terminal y en la misma carpeta de kafaka ejecutamos el siguiente comando para crear un topic nuevo:
+Abrimos otro terminal en la carpeta de kafa descargada y ejecutamos el siguiente comando para crear un nuevo topic:
 ```
-    bin/kafka-topics.sh \
-      --create \
-      --bootstrap-server localhost:9092 \
-      --replication-factor 1 \
-      --partitions 1 \
-      --topic flight_delay_classification_request
+bin/kafka-topics.sh \
+  --create \
+  --bootstrap-server localhost:9092 \
+  --replication-factor 1 \
+  --partitions 1 \
+  --topic flight_delay_classification_request
 ```
-Resultado:
+Esto último debería dar como resultado:
 ```
 Created topic "flight_delay_classification_request".
 ```
-Para ver la lista de topics creados:
-```
-bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
-```
-Resultado:
-```
-flight_delay_classification_request
-```
 
-### MongoDB
-Dentro de la carpeta practica_big_data_2019, ejecutamos el siguiente comando para importar los registro de distancia en Mongo
+### Importar registros de distancia a MongoDB
+Dentro de la carpeta `practica_big_data_2019`, lanzamos el siguiente comando que ejecuta el script `import_distances.sh` que se de encarga de importar a MongoDB 
+los registros de distancia que hemos descargado previamente:
 ```
 ./resources/import_distances.sh
 ```
-Resultado:
+El resultado de ejecutar esto debería ser lo siguiente:
 ```
 2021-11-19T19:24:38.814+0100    connected to: mongodb://localhost/
 2021-11-19T19:24:38.966+0100    4696 document(s) imported successfully. 0 document(s) failed to import.
@@ -93,47 +90,45 @@ MongoDB server version: 4.2.17
 }
 ```
 
-### Entrenar y guardar el modelo con PySpark mllib
-
-En primer lugar es necesario crear las variables de entorno JAVA_HOME y SPARK_HOME:
-cd practica_big_data_2019
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
-export SPARK_HOME=/opt/spark
-
-Ejecutamos a continuación el script train_saprk_mllib_model.py que se encarga de entrenar el modelo:
+### Entrenamiento del modelo con PySpark mllib
+Antes que nada, es necesario crear las variables de entorno JAVA_HOME y SPARK_HOME con las rutas de las carpetas donde tengamos instalado JDK y Spark respectivamente:
+```
+export JAVA_HOME=C:\Program Files\Java\jdk1.8.0_271
+export SPARK_HOME=C:\Users\markr\apachespark\spark-3.1.2
+```
+A continuación, en un terminal nos situamos en la carpeta `practica_big_data_2019` y ejecutamos el script `train_saprk_mllib_model.py` encargado de entrenar el modelo:
 ```
 python3 resources/train_spark_mllib_model.py .
 ```
-Como resultado de este comando, en la carpeta models deberían aparecer los modelos
+Como resultado de ejecutar este comando, en el directorio `models` deberían aparecer una serie de carpetas corerspondientes a los modelos creados.
 
-### Ejecutar Flight Predictor con Spark-Submit
+**NOTA:** es posible que en Windows el comando "python3" de error, en este caso utilizar "python"
 
-En primer lugar, es neceario cambiar el valor que tiene base_paht dentro de el archivo MakePrediction.scala por la ruta donde se ha clonado el repositorio de la práctica.
+### Ejecución del predicctor de vuelos con Spark Submit
+Para ejecutar el predictor de vuelos, primero hay que cambiar el valor de la variable `base_path` que hay dentro de la clase MakePrediction.scala por la ruta de la 
+carpeta donde se ha clonado el repositorio de la práctica:
 ```
-val base_path= "/home/user/Desktop/practica_big_data_2019"
+val base_path= "C:\Users\markr\practica_big_data_2019"
 ```
-Para ejecutar el código utilizando Spark-Submit ejecutamos los siguientes comandos dentro de la carpeta flight_prediction:
-```
-sbt clean
-```
+Para ejecutar el código utilizando Spark-Submit lanzamos el siguiente comando dentro de la carpeta `flight_prediction`:
 ```
 sbt package
 ```
-Este último comando lo que hace es generar el archivo .jar necesario para la ejecución del código dentro de la carpeta flight_prediction\target\scala-2.12. Una vez obtenido dicho fichero .jar, ejecutamos el siguiente comando que para ejectuar el predictor de vuelos:
+Este comando lo que hace es generar un archivo .jar dentro de la carpeta `target/scala-2.12` con el contenido que hay dentro de `src/main/scala`. Una vez comprobado que 
+se ha creado dicho archivo .jar, ejecutamos el siguiente comando de spark-submit para arrancar el predictor de vuelos:
 ```
-spark-submit --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.1,org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\flight_prediction_2.12-0.1
+spark-submit --class es.upm.dit.ging.predictor.MakePrediction --master local --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.1,org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\flight_prediction_2.12-0.1.jar
 ```
 
-### Arrancar la aplicación web de predicciones
-
-Primero declaramos la variable de entorno PROJECT_HOME con la ruta donde se ha clonado el repositorio:
+### Iniciar la apliación web de predicciones
+Primero declaramos la variable de entorno PROJECT_HOME con la ruta de la carpeta donde se ha clonado el repositorio:
 ```
-export PROJECT_HOME=/home/user/Desktop/practica_big_data_2019
+export PROJECT_HOME=C:\Users\markr\practica_big_data_2019
 ```
-Ahora, nos movemos a la carpeta resoruces/web y ejecutamos el archivo predict_flask.py:
+Ahora, nos movemos al directorio `web` que hay dentro de la carpeta `resources` y ejecutamos el archivo predict_flask.py
 ```
 cd practica_big_data_2019/resources/web
-python3 predict_flask.py
+python predict_flask.py
 ```
 Para acceder a la aplicación web de predicciones ir a http://localhost:5000/flights/delays/predict_kafka
 

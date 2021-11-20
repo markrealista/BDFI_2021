@@ -13,7 +13,22 @@ utilizar Git Bash que permite lanzar comandos básicos de Linux.
 
 **NOTA:** Esta práctica se ha llevado a cabo en Windows 10 mediante la utilización de Git Bash.
 
-## PARTE 1 - EJECUCIÓN DE LA PRÁCTICA SIN MODIFICACIONES
+## ARQUITECTURA DEL SISTEMA
+A continuación, se explican las arquitecturas front-end y back end del sistema de predicción de vuelos.
+
+**AQUITECTURA FRONT END**
+
+El siguiente diagrama muestra la arquitectura front-end del sistema de predicción. El usuario rellena un formulario web con los datos de vuelo, y estos datos posteriormente se envian al servidor. El servidor realiza las comprobaciones necesarias y envía un mensaje Kafka con la petición de predicción. Spark Stremaing se encarga de escuchar las peticiones de Kafka, realizar la predicción y almacenarla en MongoDB. A partir de que el usuario envia la petición de predicción el servidor se queda haciendo polling cada segundo para ver si los datos están disponibles. Una vez que los datos están disponibles en Mongo se muestra el resultado de predicción en la aplicación web.
+
+![image](https://user-images.githubusercontent.com/36339100/142722982-23315a49-c78b-46ec-a603-0b19079f9085.png)
+
+**AQUITECTURA BACK END**
+
+La arquitectura back-end muestra como se entrena un modelo de clasificación utilizando datos de vuelos pasados para predecir retrasos en batch en Spark. Una vez que el modelo está entrenado se guarda y posteriomente lanzamos Zookeeper y la cola de Kafka. Usamos Spark Streaming para cargar el modelo caladificador y escuchamos las peticiónes de predicción de la cola de Kafka. Cuando llega una solicitud, Spark Streaming realiza la predicción y almacena el resultado en MongoDB donde la aplicación podrá recoger para poder representarla.
+
+![image](https://user-images.githubusercontent.com/36339100/142723007-8bf81a0f-6a00-4d27-8ba4-2f1873bbbbd9.png)
+
+## EJECUCIÓN DE LA PRÁCTICA SIN MODIFICACIONES
 
 ### Instalación de componentes
 A continuación se muestran los componentes que se han utilizado para realizar la práctica:

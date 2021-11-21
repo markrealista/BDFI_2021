@@ -1,37 +1,42 @@
 # Prediccion de Vuelos - BDFI 2021
-Práctica de predicción de vuelos de la asignatura Big Data Fundamentos y Arquitectura del Máster Universitario de Ingeniría de Telecomunicación de la UPM para el curso 
-2021/2022. El guión y el código de la práctica se pueden encontrar en el siguiente repositorio: https://github.com/ging/practica_big_data_2019.
+Práctica de predicción de vuelos de la asignatura Big Data: Fundamentos e Infraestructura del Máster Universitario en Ingeniería de Telecomunicación de la UPM para 
+el curso 2021/2022. El guión y el código de la práctica se pueden encontrar en el siguiente repositorio: https://github.com/ging/practica_big_data_2019.
 
 **AUTORES:**
 - Raúl Cabria González
 - Mark Realista Quiocho
 
 **CONSIDERACIÓN IMPORTANTE:** 
-Para la correcta ejecución de la práctica se recomienda realizarla en un sistema operativo basado en Linux o en Mac OS. 
-En caso de realizarla en Windows, algunas alternativas serían instalar una máquina virtual de Linux, instalar el Subsistema de Windows para Linux disponible en Windows 10 o 
-utilizar Git Bash que permite lanzar comandos básicos de Linux.
+Para la correcta ejecución de la práctica se recomienda realizarla en un sistema operativo basado en Linux o en Mac OS. En caso de realizarla en Windows, algunas 
+alternativas serían instalar una máquina virtual de Linux, utilizar el Subsistema de Windows para Linux disponible en Windows 10 o usar Git Bash que permite 
+lanzar comandos básicos de Linux.
 
 **NOTA:** Esta práctica se ha llevado a cabo en Windows 10 mediante la utilización de Git Bash.
 
 ## ARQUITECTURA DEL SISTEMA
-A continuación, se explican las arquitecturas front-end y back end del sistema de predicción de vuelos.
+A continuación, se va a realizar un breve resumen de las arquitecturas front-end y back-end del sistema de predicción de vuelos.
 
-**AQUITECTURA FRONT END**
-
-El siguiente diagrama muestra la arquitectura front-end del sistema de predicción. El usuario rellena un formulario web con los datos de vuelo, y estos datos posteriormente se envian al servidor. El servidor realiza las comprobaciones necesarias y envía un mensaje Kafka con la petición de predicción. Spark Stremaing se encarga de escuchar las peticiones de Kafka, realizar la predicción y almacenarla en MongoDB. A partir de que el usuario envia la petición de predicción el servidor se queda haciendo polling cada segundo para ver si los datos están disponibles. Una vez que los datos están disponibles en Mongo se muestra el resultado de predicción en la aplicación web.
+### ARQUITECTURA FRONT-END
+El siguiente diagrama muestra la arquitectura front-end de la aplicación de predicción de retraso de vuelos. El usuario rellena un formulario con los datos de vuelo 
+que se envía al servidor. En el momento en el que el usuario envía el formulario, el cliente se queda haciendo "polling" al servidor cada segundo a la espera de los resultados 
+de la predicción. El servidor realiza las comprobaciones necesarias y envía un mensaje Kafka con la solicitud de predicción. Spark Stremaing se encarga de escuchar en una cola 
+de Kafka las solicitudes y realizar las predicciones, las cuales se almacenan en MongoDB. Una vez que los datos están disponibles en Mongo, el cliente muestra el resultado de 
+la predicción al usuario.
 
 ![image](https://user-images.githubusercontent.com/36339100/142722982-23315a49-c78b-46ec-a603-0b19079f9085.png)
 
-**AQUITECTURA BACK END**
-
-La arquitectura back-end muestra como se entrena un modelo de clasificación utilizando datos de vuelos pasados para predecir retrasos en batch en Spark. Una vez que el modelo está entrenado se guarda y posteriomente lanzamos Zookeeper y la cola de Kafka. Usamos Spark Streaming para cargar el modelo caladificador y escuchamos las peticiónes de predicción de la cola de Kafka. Cuando llega una solicitud, Spark Streaming realiza la predicción y almacena el resultado en MongoDB donde la aplicación podrá recoger para poder representarla.
+### ARQUITECTURA BACK-END
+El diagrama de la arquitectura back-end muestra como se entrena un modelo clasificador utilizando datos de vuelos pasados para predecir retrasos de vuelos en batch en Spark. 
+Una vez que el modelo está entrenado, se guarda y, posteriomente, se lanza Zookeeper y la cola de Kafka. Spark Streaming se usa para cargar el modelo clasificador y escuchar 
+las solicitudes de predicción de la cola de Kafka. Cuando llega una solicitud, Spark Streaming realiza la predicción y almacena el resultado en MongoDB, donde la aplicación 
+la podrá recoger para representarla.
 
 ![image](https://user-images.githubusercontent.com/36339100/142723007-8bf81a0f-6a00-4d27-8ba4-2f1873bbbbd9.png)
 
 ## EJECUCIÓN DE LA PRÁCTICA SIN MODIFICACIONES
 
 ### Instalación de componentes
-A continuación se muestran los componentes que se han utilizado para realizar la práctica:
+En la siguiente lista se muestran los componentes que se han utilizado para realizar la práctica:
 
 - [JDK](https://www.oracle.com/es/java/technologies/javase/javase8-archive-downloads.html) (version 1.8)
 - [Pyhton3](https://realpython.com/installing-python/) (Version 3.7) 
@@ -46,16 +51,15 @@ A continuación se muestran los componentes que se han utilizado para realizar l
 la versión 2.12-2.8.1.
 
 ### Descarga de datos de vuelos e instalación de librerías python
-
 En primer lugar, clonamos el repositorio de la práctica:
 ```
 git clone https://github.com/ging/practica_big_data_2019
 ```
-Ahora, dentro de la carpeta `practica_big_data_2019` descargamos los datos de vuelos:
+Una vez clonado, dentro de la carpeta `practica_big_data_2019` descargamos los datos de vuelos:
 ```
 resources/download_data.sh
 ```
-En la misma carpeta, instalamos las librearías de python requeridas:
+En la misma carpeta, instalamos las librerías de python requeridas:
 ```
 pip install -r requirements.txt
 ```
@@ -69,7 +73,7 @@ Para iniciar Kafka, abrimos otro terminal y en la misma carpeta de kafka ejecuta
 ```
 bin/kafka-server-start.sh config/server.properties
 ```
-Abrimos otro terminal en la carpeta de kafa descargada y ejecutamos el siguiente comando para crear un nuevo topic:
+Abrimos otro terminal en la carpeta de kafka descargada y ejecutamos el siguiente comando para crear un nuevo topic:
 ```
 bin/kafka-topics.sh \
   --create \
@@ -84,8 +88,8 @@ Created topic "flight_delay_classification_request".
 ```
 
 ### Importar registros de distancia a MongoDB
-Dentro de la carpeta `practica_big_data_2019`, lanzamos el siguiente comando que ejecuta el script `import_distances.sh` que se de encarga de importar a MongoDB 
-los registros de distancia que hemos descargado previamente:
+Dentro de la carpeta `practica_big_data_2019`, lanzamos el siguiente comando que ejecuta el script `import_distances.sh` que importa en MongoDB 
+los registros de distancias que hemos descargado previamente:
 ```
 ./resources/import_distances.sh
 ```
@@ -106,31 +110,32 @@ MongoDB server version: 4.2.17
 ```
 
 ### Entrenamiento del modelo con PySpark mllib
-Antes que nada, es necesario crear las variables de entorno JAVA_HOME y SPARK_HOME con las rutas de las carpetas donde tengamos instalado JDK y Spark respectivamente:
+Antes que nada, es necesario crear las variables de entorno JAVA_HOME y SPARK_HOME con las rutas de las carpetas donde tengamos instalado JDK y Spark:
 ```
 export JAVA_HOME=C:\Program Files\Java\jdk1.8.0_271
 export SPARK_HOME=C:\Users\markr\apachespark\spark-3.1.2
 ```
-A continuación, en un terminal nos situamos en la carpeta `practica_big_data_2019` y ejecutamos el script `train_saprk_mllib_model.py` encargado de entrenar el modelo:
+A continuación, en un terminal nos situamos en la carpeta `practica_big_data_2019` y ejecutamos el script `train_saprk_mllib_model.py` para entrenar 
+el modelo:
 ```
 python3 resources/train_spark_mllib_model.py .
 ```
 Como resultado de ejecutar este comando, en el directorio `models` deberían aparecer una serie de carpetas corerspondientes a los modelos creados.
 
-**NOTA:** es posible que en Windows el comando "python3" de error, en este caso utilizar "python"
+**NOTA:** es posible que en Windows el comando "python3" de error, en ese caso utilizar "python"
 
-### Ejecución del predicctor de vuelos con Spark Submit
+### Ejecución del predicctor de vuelos con spark-submit
 Para ejecutar el predictor de vuelos, primero hay que cambiar el valor de la variable `base_path` que hay dentro de la clase MakePrediction.scala por la ruta de la 
 carpeta donde se ha clonado el repositorio de la práctica:
 ```
 val base_path= "C:\Users\markr\practica_big_data_2019"
 ```
-Para ejecutar el código utilizando Spark-Submit lanzamos el siguiente comando dentro de la carpeta `flight_prediction`:
+Para ejecutar el código utilizando spark-submit, lanzamos el siguiente comando dentro de la carpeta `flight_prediction`:
 ```
 sbt package
 ```
-Este comando lo que hace es generar un archivo .jar dentro de la carpeta `target/scala-2.12` con el contenido que hay dentro de `src/main/scala`. Una vez comprobado que 
-se ha creado dicho archivo .jar, ejecutamos el siguiente comando de spark-submit para arrancar el predictor de vuelos:
+Este comando genera un archivo .jar dentro de la carpeta `target/scala-2.12` con el contenido que hay dentro de `src/main/scala`. Una vez comprobado 
+que se ha creado dicho archivo .jar, ejecutamos el siguiente comando de spark-submit para arrancar el predictor de vuelos:
 ```
 spark-submit --class es.upm.dit.ging.predictor.MakePrediction --master local --packages org.mongodb.spark:mongo-spark-connector_2.12:3.0.1,org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 C:\Users\markr\practica_big_data_2019\flight_prediction\target\scala-2.12\flight_prediction_2.12-0.1.jar
 ```
@@ -140,7 +145,7 @@ Primero declaramos la variable de entorno PROJECT_HOME con la ruta de la carpeta
 ```
 export PROJECT_HOME=C:\Users\markr\practica_big_data_2019
 ```
-Ahora, nos movemos al directorio `web` que hay dentro de la carpeta `resources` y ejecutamos el archivo predict_flask.py
+Ahora, nos movemos al directorio `web` que hay dentro de la carpeta `resources` y ejecutamos el archivo `predict_flask.py`
 ```
 cd practica_big_data_2019/resources/web
 python predict_flask.py

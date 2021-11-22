@@ -155,7 +155,7 @@ Para acceder a la aplicación web de predicciones ir a http://localhost:5000/fli
 ### Comprobación de la predicciones insertadas en MongoDB
 ```
 $ mongo
-> use use agile_data_science;
+> use agile_data_science;
 >db.flight_delay_classification_response.find();
 ```
 Debería salir algo similar a esto:

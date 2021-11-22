@@ -115,7 +115,7 @@ Antes que nada, es necesario crear las variables de entorno JAVA_HOME y SPARK_HO
 export JAVA_HOME=C:\Program Files\Java\jdk1.8.0_271
 export SPARK_HOME=C:\Users\markr\apachespark\spark-3.1.2
 ```
-A continuación, en un terminal nos situamos en la carpeta `practica_big_data_2019` y ejecutamos el script `train_saprk_mllib_model.py` para entrenar 
+A continuación, en un terminal nos situamos en la carpeta `practica_big_data_2019` y ejecutamos el script `train_spark_mllib_model.py` para entrenar 
 el modelo:
 ```
 python3 resources/train_spark_mllib_model.py .

@@ -87,7 +87,7 @@ Esto último debería dar como resultado:
 Created topic "flight_delay_classification_request".
 ```
 
-### Importar registros de distancia a MongoDB
+### Importar registros de distancias a MongoDB
 Dentro de la carpeta `practica_big_data_2019`, lanzamos el siguiente comando que ejecuta el script `import_distances.sh` que importa en MongoDB 
 los registros de distancias que hemos descargado previamente:
 ```
